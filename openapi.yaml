@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: URL Shortening Service
+  description: Service to shorten long URLs.
+  version: 1.0.0
+servers:
+  - url: https://example.com/
+paths:
+  /shorten:
+    post:
+      summary: Shorten a URL
+      operationId: shorty.shorten_url
+      requestBody:
+        description: URL to shorten
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Url'
+            examples:
+              shortenUrlRequest:
+                value:
+                  url: "https://www.very-long-url.com/"
+      responses:
+        '200':
+          description: Short URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Url'
+              examples:
+                shortenUrlResponse:
+                  value:
+                    url: "https://example.com/abc123"
+        '400':
+          description: Invalid URL provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidUrlResponse:
+                  value:
+                    error: "Invalid URL provided"
+  /{short_code}:
+    get:
+      summary: Redirect to long URL
+      operationId: shorty.redirect_to_url
+      parameters:
+        - name: short_code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to the long URL
+          headers:
+            Location:
+              description: The long URL to redirect to
+              schema:
+                type: string
+                format: uri
+        '404':
+          description: Short URL not found or expired
+          content:
+            text/html:
+              schema:
+                type: string
+              examples:
+                notFoundResponse:
+                  value: "<html><head><title>URL Not Found</title></head><body><h1>URL Not Found</h1><p>The URL you have requested could not be found. Please check the URL and try again.</p></body></html>"
+components:
+  schemas:
+    Url:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: The URL
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: The error message

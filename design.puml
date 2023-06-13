@@ -1,0 +1,64 @@
+@startuml
+
+title URL Shortening Service Sequence Diagram
+
+actor User as "User"
+
+entity URLShortenerService as "URL Shortening Service"
+database RedisDatabase as "Redis Database"
+
+== User Submits a Long URL and Receives a Short URL in Response ==
+User -> URLShortenerService: POST /shorten { "url": "long_url" }
+activate URLShortenerService
+URLShortenerService -> RedisDatabase: GET url_sha1_base62
+activate RedisDatabase
+RedisDatabase --> URLShortenerService: short_code (if exists)
+deactivate RedisDatabase
+alt short_code does not exist
+    URLShortenerService -> RedisDatabase: SET {short_code}, {long_url} and SET {url_sha1_base62}, {short_code} with TTL=24hrs
+    activate RedisDatabase
+    RedisDatabase --> URLShortenerService: OK
+    deactivate RedisDatabase
+end
+URLShortenerService --> User: { "url": "short_url" }
+deactivate URLShortenerService
+
+== User Visits the Short URL and Gets Redirected to the Original Long URL ==
+User -> URLShortenerService: GET /{short_code}
+activate URLShortenerService
+URLShortenerService -> RedisDatabase: GET {short_code}
+activate RedisDatabase
+RedisDatabase --> URLShortenerService: long_url
+deactivate RedisDatabase
+URLShortenerService --> User: 302 Redirect to long_url
+deactivate URLShortenerService
+
+== User Attempts to Access an Expired Short URL and Receives an Appropriate Response ==
+User -> URLShortenerService: GET /{expired_short_code}
+activate URLShortenerService
+URLShortenerService -> RedisDatabase: GET {expired_short_code}
+activate RedisDatabase
+RedisDatabase --> URLShortenerService: nil
+deactivate RedisDatabase
+URLShortenerService --> User: 404 Error HTML Page
+deactivate URLShortenerService
+
+== User Submits an Invalid Long URL and Gets an Error Response ==
+User -> URLShortenerService: POST /shorten { "url": "invalid_long_url" }
+activate URLShortenerService
+alt invalid_long_url
+    URLShortenerService --> User: 400 Bad Request
+end
+deactivate URLShortenerService
+
+== User Submits the Same Long URL Multiple Times and Receives the Same Short URL Within the 24-hour Duration ==
+User -> URLShortenerService: POST /shorten { "url": "same_long_url" }
+activate URLShortenerService
+URLShortenerService -> RedisDatabase: GET url_sha1_base62
+activate RedisDatabase
+RedisDatabase --> URLShortenerService: short_code
+deactivate RedisDatabase
+URLShortenerService --> User: { "url": "same_short_url" }
+deactivate URLShortenerService
+
+@enduml
