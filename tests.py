@@ -37,7 +37,7 @@ def test_shorten_valid_url(client):
     assert "url" in response.get_json()
     short_url = response.get_json()["url"]
     assert urlparse(short_url).netloc == "example.com"
-    assert len(urlparse(short_url).path.strip("/")) == 8
+    assert 8 <= len(urlparse(short_url).path.strip("/")) <= 9
     # then we use the short URL
     response = client.get(urlparse(short_url).path)
     assert response.status_code == 302

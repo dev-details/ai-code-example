@@ -4,20 +4,17 @@ version = "0.1.0"
 description = ""
 authors = ["Mike Thornton <361145+six8@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "ai_code_example"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-openai = "^0.27.8"
 connexion = "^2.14.2"
-pytest-freezegun = "^0.4.2"
-opentelemetry-sdk = "^1.18.0"
-
+redis = "^4.5.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.2"
 freezegun = "^1.2.2"
 fakeredis = "^2.14.1"
+pytest-freezegun = "^0.4.2"
 
 [build-system]
 requires = ["poetry-core"]
