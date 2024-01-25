@@ -4,6 +4,7 @@ import string
 import urllib.parse
 from datetime import timedelta
 import connexion
+from connexion.options import SwaggerUIOptions
 from redis import Redis
 
 
@@ -13,7 +14,11 @@ redis = Redis(host="redis", port=6379)
 
 
 def create_app():
-    app = connexion.FlaskApp(__name__, specification_dir="./")
+    app = connexion.FlaskApp(
+        __name__,
+        specification_dir="./",
+        swagger_ui_options=SwaggerUIOptions(swagger_ui=False),
+    )
     app.add_api("openapi.yaml")
     return app
 
