@@ -164,11 +164,11 @@ should handle them.
 
 - [connexion](https://connexion.readthedocs.io/): Used for handling HTTP 
   requests in Python applications.
-- [redis](https://redis-py.readthedocs.io/en/stable/): This is a Python 
+- [redis](https://redis-py.readthedocs.io/): This is a Python 
   client for Redis, a key-value store.
-- [pytest](https://docs.pytest.org/en/stable/): A framework for writing 
+- [pytest](https://docs.pytest.org/): A framework for writing 
   and running tests in Python.
 - [freezegun](https://github.com/spulec/freezegun): A library that allows
   your Python tests to travel through time by mocking the datetime module.
-- [fakeredis](https://fakeredis.readthedocs.io/en/stable/): A fake Redis
+- [fakeredis](https://fakeredis.readthedocs.io/): A fake Redis
   server implementation for testing purposes.
